@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: circleguard-promotion-service
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: password
+  kafka:
+    bootstrap-servers: localhost:9092
+    
+server:
+  port: 8081
