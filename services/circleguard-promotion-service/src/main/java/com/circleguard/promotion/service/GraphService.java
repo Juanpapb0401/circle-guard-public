@@ -1,7 +1,7 @@
 package com.circleguard.promotion.service;
 
 import com.circleguard.promotion.model.graph.*;
-import com.circleguard.promotion.repository.UserNodeRepository;
+import com.circleguard.promotion.repository.graph.UserNodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -30,11 +30,13 @@ public class GraphService {
     public void detectAndFormCircles(String locationId) {
         // High-performance Cypher query for cluster detection
         String query = "MATCH (u:User)-[r:ENCOUNTERED {locationId: $loc}]->(target:User) " +
-                       "WHERE r.duration > 300 " +
-                       "WITH collect(u.anonymousId) + collect(target.anonymousId) as users " +
-                       "UNWIND users as uid " +
+                        "WHERE r.duration > 300 " +
+                       "WITH collect(DISTINCT u.anonymousId) + collect(DISTINCT target.anonymousId) as allUsers " +
+                       "UNWIND allUsers as uid " +
                        "WITH DISTINCT uid " +
-                       "WHERE count(uid) > 3 " +
+                       "WITH collect(uid) as users " +
+                       "WHERE size(users) >= 3 " +
+                       "UNWIND users as uid " +
                        "MERGE (c:Circle {locationId: $loc, isActive: true}) " +
                        "SET c.name = 'Auto-Circle-' + $loc, c.createdAt = timestamp() " +
                        "WITH c, uid " +

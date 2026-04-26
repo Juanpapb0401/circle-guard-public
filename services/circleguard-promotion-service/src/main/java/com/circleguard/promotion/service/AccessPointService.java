@@ -2,8 +2,8 @@ package com.circleguard.promotion.service;
 
 import com.circleguard.promotion.model.AccessPoint;
 import com.circleguard.promotion.model.Floor;
-import com.circleguard.promotion.repository.AccessPointRepository;
-import com.circleguard.promotion.repository.FloorRepository;
+import com.circleguard.promotion.repository.jpa.AccessPointRepository;
+import com.circleguard.promotion.repository.jpa.FloorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

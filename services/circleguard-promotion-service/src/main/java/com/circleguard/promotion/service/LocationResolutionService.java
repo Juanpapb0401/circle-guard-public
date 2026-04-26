@@ -1,7 +1,7 @@
 package com.circleguard.promotion.service;
 
 import com.circleguard.promotion.model.AccessPoint;
-import com.circleguard.promotion.repository.AccessPointRepository;
+import com.circleguard.promotion.repository.jpa.AccessPointRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

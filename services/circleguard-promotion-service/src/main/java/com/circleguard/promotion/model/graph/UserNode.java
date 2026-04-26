@@ -19,6 +19,10 @@ public class UserNode {
     @Property("status")
     private String status; // ACTIVE, CONTAGIED, RECOVERED, etc.
 
+    @Property("statusUpdatedAt")
+    private Long statusUpdatedAt;
+
     @Relationship(type = "ENCOUNTERED", direction = Relationship.Direction.OUTGOING)
+    @Builder.Default
     private Set<EncounterRelationship> encounters = new HashSet<>();
 }

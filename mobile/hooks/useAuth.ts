@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { storage } from '@/utils/storage';
 
 /**
  * Hook to manage CircleGuard Identity Handshake.
@@ -16,8 +16,9 @@ export const useAuth = () => {
 
   const loadIdentity = async () => {
     try {
-      const id = await SecureStore.getItemAsync('circleguard_anon_id');
-      const storedToken = await SecureStore.getItemAsync('circleguard_token');
+      const id = await storage.getItem('circleguard_anon_id');
+      const storedToken = await storage.getItem('circleguard_token');
+      console.log('useAuth: Loaded from storage', { id, storedToken });
       setAnonymousId(id);
       setToken(storedToken);
     } catch (e) {
@@ -28,15 +29,17 @@ export const useAuth = () => {
   };
 
   const enroll = async (id: string, newToken: string) => {
-    await SecureStore.setItemAsync('circleguard_anon_id', id);
-    await SecureStore.setItemAsync('circleguard_token', newToken);
+    console.log('useAuth: Enrolling', { id });
+    await storage.setItem('circleguard_anon_id', id);
+    await storage.setItem('circleguard_token', newToken);
     setAnonymousId(id);
     setToken(newToken);
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync('circleguard_anon_id');
-    await SecureStore.deleteItemAsync('circleguard_token');
+    console.log('useAuth: Logging out and clearing storage');
+    await storage.deleteItem('circleguard_anon_id');
+    await storage.deleteItem('circleguard_token');
     setAnonymousId(null);
     setToken(null);
   };

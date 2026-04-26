@@ -20,4 +20,8 @@ public class EncounterRelationship {
     private Long startTime;
     private Long duration; // in seconds
     private String locationId; // The AP or Zone ID where it happened
+    @Builder.Default
+    private boolean isValid = true;
+    @Builder.Default
+    private boolean forceFence = false;
 }

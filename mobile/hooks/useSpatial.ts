@@ -1,12 +1,16 @@
 import { useState, useCallback } from 'react';
-
-const API_BASE = 'http://localhost:8081/api/v1';
+import { PROMOTION_BASE_URL, FILE_BASE_URL } from '../constants/Config';
+const API_BASE = `${PROMOTION_BASE_URL}/api/v1`;
+const FILE_API_BASE = `${FILE_BASE_URL}/api/v1/files`;
 
 export interface Building {
     id: string;
     name: string;
     code: string;
     description: string;
+    latitude?: number;
+    longitude?: number;
+    address?: string;
 }
 
 export interface Floor {
@@ -14,6 +18,7 @@ export interface Floor {
     buildingId: string;
     floorNumber: number;
     name: string;
+    floorPlanUrl?: string;
 }
 
 export interface AccessPoint {
@@ -73,6 +78,29 @@ export const useSpatial = () => {
         return await resp.json();
     };
 
+    const updateFloor = async (id: string, data: { floorNumber?: number, name?: string, floorPlanUrl?: string }) => {
+        const resp = await fetch(`${API_BASE}/floors/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        return await resp.json();
+    };
+
+    const uploadFloorPlan = async (floorId: string, file: any) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const resp = await fetch(`${FILE_API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const { filename } = await resp.json();
+        const url = `${FILE_API_BASE}/download/${filename}`;
+        
+        return await updateFloor(floorId, { floorPlanUrl: url });
+    };
+
     const getAccessPoints = useCallback(async (floorId: string): Promise<AccessPoint[]> => {
         const resp = await fetch(`${API_BASE}/floors/${floorId}/access-points`);
         return await resp.json();
@@ -104,6 +132,8 @@ export const useSpatial = () => {
         deleteBuilding,
         getFloors,
         createFloor,
+        updateFloor,
+        uploadFloorPlan,
         getAccessPoints,
         saveAccessPoint,
         deleteAccessPoint

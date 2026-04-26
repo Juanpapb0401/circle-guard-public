@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.MessageDigest;
 import java.util.UUID;
 import java.util.HexFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,6 @@ public class IdentityVaultService {
     public String resolveRealIdentity(UUID anonymousId) {
         return repository.findById(anonymousId)
                 .map(IdentityMapping::getRealIdentity)
-                .orElseThrow(() -> new RuntimeException("Identity not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Identity not found"));
     }
 }

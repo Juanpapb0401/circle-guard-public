@@ -12,7 +12,12 @@ export const usePermission = () => {
         if (!token) return [];
         try {
             // Basic JWT decoding (payload is the second part)
-            const base64Url = token.split('.')[1];
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                // Not a valid JWT (could be a handoff token or other non-auth string)
+                return [];
+            }
+            const base64Url = parts[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(
                 atob(base64)
@@ -23,7 +28,7 @@ export const usePermission = () => {
             const payload = JSON.parse(jsonPayload);
             return payload.permissions || [];
         } catch (e) {
-            console.error('Failed to decode JWT permissions', e);
+            console.warn('Malformed JWT token detected', e);
             return [];
         }
     }, [token]);

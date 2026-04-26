@@ -2,9 +2,9 @@ package com.circleguard.promotion.service;
 
 import com.circleguard.promotion.model.Building;
 import com.circleguard.promotion.model.Floor;
-import com.circleguard.promotion.repository.AccessPointRepository;
-import com.circleguard.promotion.repository.BuildingRepository;
-import com.circleguard.promotion.repository.FloorRepository;
+import com.circleguard.promotion.repository.jpa.AccessPointRepository;
+import com.circleguard.promotion.repository.jpa.BuildingRepository;
+import com.circleguard.promotion.repository.jpa.FloorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +36,12 @@ public class FloorService {
     }
 
     @Transactional
-    public Floor updateFloor(UUID id, Integer floorNumber, String name) {
+    public Floor updateFloor(UUID id, Integer floorNumber, String name, String floorPlanUrl) {
         Floor floor = floorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Floor not found"));
-        floor.setFloorNumber(floorNumber);
-        floor.setName(name);
+        if (floorNumber != null) floor.setFloorNumber(floorNumber);
+        if (name != null) floor.setName(name);
+        if (floorPlanUrl != null) floor.setFloorPlanUrl(floorPlanUrl);
         return floorRepository.save(floor);
     }
 

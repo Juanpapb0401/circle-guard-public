@@ -24,6 +24,12 @@ public class Building {
 
     private String description;
 
+    private Double latitude;
+
+    private Double longitude;
+
+    private String address;
+
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
     private List<Floor> floors;
 }

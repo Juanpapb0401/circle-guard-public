@@ -1,13 +1,18 @@
+package com.circleguard.promotion.controller;
+
+import com.circleguard.promotion.dto.AccessPointDTO;
+import com.circleguard.promotion.dto.FloorDTO;
 import com.circleguard.promotion.model.AccessPoint;
 import com.circleguard.promotion.model.Floor;
 import com.circleguard.promotion.service.AccessPointService;
 import com.circleguard.promotion.service.FloorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/floors")
@@ -17,30 +22,57 @@ public class FloorController {
     private final AccessPointService accessPointService;
 
     @PostMapping("/{id}/access-points")
-    public ResponseEntity<AccessPoint> addAccessPoint(@PathVariable UUID id, @RequestBody Map<String, Object> request) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<AccessPointDTO> addAccessPoint(@PathVariable UUID id, @RequestBody AccessPointDTO request) {
         AccessPoint ap = accessPointService.registerAccessPoint(
                 id,
-                (String) request.get("macAddress"),
-                Double.valueOf(request.get("coordinateX").toString()),
-                Double.valueOf(request.get("coordinateY").toString()),
-                (String) request.get("name")
+                request.getMacAddress(),
+                request.getCoordinateX(),
+                request.getCoordinateY(),
+                request.getName()
         );
-        return ResponseEntity.ok(ap);
+        return ResponseEntity.ok(convertApToDTO(ap));
     }
 
     @GetMapping("/{id}/access-points")
-    public ResponseEntity<List<AccessPoint>> getAccessPoints(@PathVariable UUID id) {
-        return ResponseEntity.ok(accessPointService.getAccessPointsByFloor(id));
+    public ResponseEntity<List<AccessPointDTO>> getAccessPoints(@PathVariable UUID id) {
+        List<AccessPointDTO> dtos = accessPointService.getAccessPointsByFloor(id).stream()
+                .map(this::convertApToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Floor> updateFloor(@PathVariable UUID id, @RequestBody Map<String, Object> request) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<FloorDTO> updateFloor(@PathVariable UUID id, @RequestBody FloorDTO request) {
         Floor floor = floorService.updateFloor(
                 id,
-                (Integer) request.get("floorNumber"),
-                (String) request.get("name")
+                request.getFloorNumber(),
+                request.getName(),
+                request.getFloorPlanUrl()
         );
-        return ResponseEntity.ok(floor);
+        return ResponseEntity.ok(convertFloorToDTO(floor));
+    }
+
+    private FloorDTO convertFloorToDTO(Floor floor) {
+        return FloorDTO.builder()
+                .id(floor.getId())
+                .buildingId(floor.getBuilding() != null ? floor.getBuilding().getId() : null)
+                .floorNumber(floor.getFloorNumber())
+                .name(floor.getName())
+                .floorPlanUrl(floor.getFloorPlanUrl())
+                .build();
+    }
+
+    private AccessPointDTO convertApToDTO(AccessPoint ap) {
+        return AccessPointDTO.builder()
+                .id(ap.getId())
+                .macAddress(ap.getMacAddress())
+                .floorId(ap.getFloor() != null ? ap.getFloor().getId() : null)
+                .coordinateX(ap.getCoordinateX())
+                .coordinateY(ap.getCoordinateY())
+                .name(ap.getName())
+                .build();
     }
 
     @DeleteMapping("/{id}")

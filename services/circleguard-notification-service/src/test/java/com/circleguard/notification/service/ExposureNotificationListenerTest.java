@@ -19,6 +19,24 @@ class ExposureNotificationListenerTest {
     @MockBean
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    @MockBean
+    private NotificationDispatcher dispatcher;
+
+    @MockBean
+    private org.springframework.mail.javamail.JavaMailSender mailSender;
+
+    @MockBean
+    private org.springframework.web.reactive.function.client.WebClient.Builder webClientBuilder;
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private SmsService smsService;
+
+    @MockBean
+    private PushService pushService;
+
     @Test
     void shouldHandleStatusChangeEventWithoutError() {
         String mockEvent = "{\"userId\": \"user-123\", \"newStatus\": \"EXPOSED\"}";
