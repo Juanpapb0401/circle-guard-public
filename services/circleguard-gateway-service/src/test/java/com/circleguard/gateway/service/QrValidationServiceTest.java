@@ -61,7 +61,50 @@ public class QrValidationServiceTest {
         Mockito.when(valueOps.get("user:status:" + anonymousId)).thenReturn("CONTAGIED");
 
         QrValidationService.ValidationResult result = service.validateToken(token);
-        
+
+        assertFalse(result.valid());
+        assertEquals("RED", result.status());
+    }
+
+    // ── nuevas pruebas unitarias ──────────────────────────────────
+
+    @Test
+    void shouldDenyAccessForPotentialStatus() {
+        String anonymousId = UUID.randomUUID().toString();
+        Key key = Keys.hmacShaKeyFor(secret.getBytes());
+        String token = Jwts.builder()
+                .setSubject(anonymousId)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        Mockito.when(valueOps.get("user:status:" + anonymousId)).thenReturn("POTENTIAL");
+
+        QrValidationService.ValidationResult result = service.validateToken(token);
+
+        assertFalse(result.valid());
+        assertEquals("RED", result.status());
+    }
+
+    @Test
+    void shouldDenyAccessForMalformedToken() {
+        QrValidationService.ValidationResult result = service.validateToken("not-a-jwt-token");
+
+        assertFalse(result.valid());
+        assertEquals("RED", result.status());
+    }
+
+    @Test
+    void shouldDenyAccessForExpiredToken() {
+        Key key = Keys.hmacShaKeyFor(secret.getBytes());
+        String expiredToken = Jwts.builder()
+                .setSubject(UUID.randomUUID().toString())
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis() - 120_000))
+                .setExpiration(new java.util.Date(System.currentTimeMillis() - 60_000))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        QrValidationService.ValidationResult result = service.validateToken(expiredToken);
+
         assertFalse(result.valid());
         assertEquals("RED", result.status());
     }

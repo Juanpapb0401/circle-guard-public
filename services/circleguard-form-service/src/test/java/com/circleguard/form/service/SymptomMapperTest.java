@@ -44,15 +44,70 @@ class SymptomMapperTest {
                 .text("Do you have a fever?")
                 .type(QuestionType.YES_NO)
                 .build();
-        
+
         Questionnaire questionnaire = Questionnaire.builder()
                 .questions(List.of(q))
                 .build();
-        
+
         HealthSurvey survey = HealthSurvey.builder()
                 .responses(Map.of(questionId.toString(), "NO"))
                 .build();
-        
+
+        assertFalse(mapper.hasSymptoms(survey, questionnaire));
+    }
+
+    // ── nuevas pruebas unitarias ──────────────────────────────────
+
+    @Test
+    void shouldDetectSymptomsFromCough() {
+        UUID questionId = UUID.randomUUID();
+        Question q = Question.builder()
+                .id(questionId)
+                .text("Do you have a cough?")
+                .type(QuestionType.YES_NO)
+                .build();
+
+        Questionnaire questionnaire = Questionnaire.builder()
+                .questions(List.of(q))
+                .build();
+
+        HealthSurvey survey = HealthSurvey.builder()
+                .responses(Map.of(questionId.toString(), "YES"))
+                .build();
+
+        assertTrue(mapper.hasSymptoms(survey, questionnaire));
+    }
+
+    @Test
+    void shouldDetectSymptomsFromBreathingDifficulty() {
+        UUID questionId = UUID.randomUUID();
+        Question q = Question.builder()
+                .id(questionId)
+                .text("Are you having trouble breathing?")
+                .type(QuestionType.YES_NO)
+                .build();
+
+        Questionnaire questionnaire = Questionnaire.builder()
+                .questions(List.of(q))
+                .build();
+
+        HealthSurvey survey = HealthSurvey.builder()
+                .responses(Map.of(questionId.toString(), "YES"))
+                .build();
+
+        assertTrue(mapper.hasSymptoms(survey, questionnaire));
+    }
+
+    @Test
+    void shouldReturnFalseWhenResponsesAreNull() {
+        Questionnaire questionnaire = Questionnaire.builder()
+                .questions(List.of())
+                .build();
+
+        HealthSurvey survey = HealthSurvey.builder()
+                .responses(null)
+                .build();
+
         assertFalse(mapper.hasSymptoms(survey, questionnaire));
     }
 }
