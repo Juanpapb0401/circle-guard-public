@@ -46,3 +46,10 @@ web-build/
 *_data/
 pgdata/
 neo4jdata/
+
+# Claude Code session files
+CLAUDE.md
+MEMORY.md
+feedback_workflow.md
+project_taller2.md
+.agent/
