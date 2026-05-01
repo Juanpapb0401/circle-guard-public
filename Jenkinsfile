@@ -22,6 +22,13 @@ pipeline {
         stage('Build') {
             steps {
                 sh './gradlew build -x test --parallel'
+                sh '''
+                    for SERVICE in ${SERVICES}; do
+                        LIBS="services/circleguard-${SERVICE}-service/build/libs"
+                        JAR=$(ls ${LIBS}/*.jar | grep -v plain | head -1)
+                        cp "$JAR" "${LIBS}/app.jar"
+                    done
+                '''
             }
         }
 
