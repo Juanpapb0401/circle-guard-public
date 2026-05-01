@@ -14,6 +14,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security") // for encryption utils
     implementation("org.flywaydb:flyway-core")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")

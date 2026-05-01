@@ -34,6 +34,15 @@ spring:
 server:
   port: 8088
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 jwt:
   secret: "my-super-secret-dev-key-32-chars-long-12345678"
   expiration: 3600000
