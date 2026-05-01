@@ -2,7 +2,7 @@ spring:
   application:
     name: circleguard-dashboard-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/circleguard_dashboard
+    url: jdbc:postgresql://localhost:5433/circleguard_dashboard
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver

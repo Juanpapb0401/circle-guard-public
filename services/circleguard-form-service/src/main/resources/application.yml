@@ -2,7 +2,7 @@ spring:
   application:
     name: circleguard-form-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/circleguard_form
+    url: jdbc:postgresql://localhost:5433/circleguard_form
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver

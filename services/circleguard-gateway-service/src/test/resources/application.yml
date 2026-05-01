@@ -1,0 +1,3 @@
+qr:
+  secret: my-super-secret-qr-key-32-chars-long
+  expiration: 60000

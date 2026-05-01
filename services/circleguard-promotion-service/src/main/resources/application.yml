@@ -2,7 +2,7 @@ spring:
   application:
     name: circleguard-promotion-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/circleguard_promotion
+    url: jdbc:postgresql://localhost:5433/circleguard_promotion
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver
