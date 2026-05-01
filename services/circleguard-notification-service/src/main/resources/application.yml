@@ -41,3 +41,8 @@ management:
   endpoint:
     health:
       show-details: never
+  health:
+    kafka:
+      enabled: false
+    mail:
+      enabled: false
