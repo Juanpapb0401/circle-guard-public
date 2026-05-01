@@ -62,6 +62,7 @@ pipeline {
 
                         for SERVICE in ${SERVICES}; do
                             docker build \
+                                --platform linux/amd64 \
                                 -t ${ACR_LOGIN_SERVER}/circleguard-${SERVICE}:${BUILD_NUMBER} \
                                 -t ${ACR_LOGIN_SERVER}/circleguard-${SERVICE}:latest \
                                 -f services/circleguard-${SERVICE}-service/Dockerfile \
