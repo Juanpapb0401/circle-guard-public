@@ -249,8 +249,8 @@ class HealthSurveyBatchUser(HttpUser):
     _anonymous_id: str = ""
 
     def on_start(self):
-        # Cada usuario virtual representa un estudiante distinto
-        self._anonymous_id = str(uuid.uuid4())
+        _, anonymous_id = _login(self.client, _pick_user())
+        self._anonymous_id = anonymous_id or str(uuid.uuid4())
 
     @task
     def submit_daily_health_survey(self):
