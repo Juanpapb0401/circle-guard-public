@@ -258,7 +258,7 @@ class HealthSurveyBatchUser(HttpUser):
         if not self._anonymous_id:
             return
         with self.client.post(
-            "/api/v1/surveys",
+            FORM_URL + "/api/v1/surveys",
             json={
                 "anonymousId": self._anonymous_id,
                 "hasFever":  False,
