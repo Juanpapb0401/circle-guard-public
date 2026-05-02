@@ -250,18 +250,19 @@ class HealthSurveyBatchUser(HttpUser):
 
     def on_start(self):
         _, anonymous_id = _login(self.client, _pick_user())
-        self._anonymous_id = anonymous_id or str(uuid.uuid4())
+        self._anonymous_id = anonymous_id  # None if login failed — task will skip
 
     @task
     def submit_daily_health_survey(self):
         """Envío de encuesta matutina — máxima concurrencia, datos únicos por usuario."""
+        if not self._anonymous_id:
+            return
         with self.client.post(
             "/api/v1/surveys",
             json={
                 "anonymousId": self._anonymous_id,
                 "hasFever":  False,
                 "hasCough":  False,
-                "otherSymptoms": None,
             },
             catch_response=True,
             name="form: POST /surveys (batch)",
