@@ -1,4 +1,15 @@
-# 🛡️ CircleGuard Monorepo
+# 📄 CI/CD Documentation (Taller 2)
+
+## Juan Pablo Parra A00398004 
+
+
+| Documento | Descripción |
+|:---|:---|
+| [Taller-Docs.md](../Taller-Docs.md) | Documentación completa del taller: infraestructura Azure/AKS, pipelines Jenkins, análisis de rendimiento y problemas encontrados |
+| [Tests.md](Tests.md) | Documentación detallada de todas las pruebas: unitarias, integración, E2E (pytest) y rendimiento (Locust) con resultados y análisis |
+
+
+## 🛡️ CircleGuard Monorepo
 
 **Absolute Privacy. High-Speed Containment. Secure Campus.**
 
@@ -156,3 +167,7 @@ We maintain high system integrity via multi-level testing:
 - **FERPA Compliance**: Student identities are never stored in the contact graph.
 - **Right to be Forgotten**: Users can trigger complete data purging via the Identity Vault.
 - **Temporal Privacy**: All contact edges are automatically purged after 14 days.
+
+---
+
+
