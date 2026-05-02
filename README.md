@@ -5,7 +5,7 @@
 
 | Documento | Descripción |
 |:---|:---|
-| [Taller-Docs.md](../Taller-Docs.md) | Documentación completa del taller: infraestructura Azure/AKS, pipelines Jenkins, análisis de rendimiento y problemas encontrados |
+| [Taller-Docs.md](Taller-Docs.md) | Documentación completa del taller: infraestructura Azure/AKS, pipelines Jenkins, análisis de rendimiento y problemas encontrados |
 | [Tests.md](Tests.md) | Documentación detallada de todas las pruebas: unitarias, integración, E2E (pytest) y rendimiento (Locust) con resultados y análisis |
 
 
