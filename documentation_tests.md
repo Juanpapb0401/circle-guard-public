@@ -342,13 +342,17 @@ AUTH_URL=http://<ip>:8180 GATEWAY_URL=http://<ip>:8087 FORM_URL=http://<ip>:8086
 
 | Tarea | Peso | Descripción |
 |---|---|---|
-| `submit_daily_health_survey` | 1 | Encuesta masiva con `anonymousId` único por usuario virtual — stress de PostgreSQL |
+| `submit_daily_health_survey` | 1 | Encuesta masiva — `anonymousId` obtenido en `on_start` vía login real, no generado aleatoriamente — stress de PostgreSQL |
+
+> **Nota sobre `on_start`:** `HealthSurveyBatchUser.on_start()` realiza un login real al auth-service para obtener un `anonymousId` válido que ya exista en la base de datos del form-service. Sin esto, el form-service rechaza encuestas con UUIDs desconocidos.
+
+> **Nota sobre `--host` en CI/CD:** El comando Locust en el Jenkinsfile pasa `--host http://localhost:8087` (el gateway), lo que sobrescribe el atributo `host` de **todas** las clases de usuario. Por eso `submit_daily_health_survey` y `submit_health_survey` (StudentUser) usan URLs absolutas (`FORM_URL + "/api/v1/surveys"`): las URLs absolutas ignoran el `--host` del CLI. Las URLs relativas se resolverían contra el gateway y recibirían 404.
 
 ---
 
 ### 4.2 Resultados de la prueba de referencia
 
-**Configuración:** 20 usuarios virtuales, rampa de 5 usuarios/s, duración 20 segundos — ejecutado con servicios corriendo en local.
+**Configuración:** 20 usuarios virtuales, rampa de 5 usuarios/s, duración 20 segundos — ejecutado con servicios corriendo en local (sin `--host` de CLI, cada clase usa su propio `host`).
 
 | Endpoint | Requests | Fallos | Mediana | P95 | P99 | Mín | Máx |
 |---|---|---|---|---|---|---|---|
@@ -370,7 +374,9 @@ AUTH_URL=http://<ip>:8180 GATEWAY_URL=http://<ip>:8087 FORM_URL=http://<ip>:8086
 Mediana de **2 ms** — el endpoint más rápido del sistema. Es una operación puramente criptográfica (firma HMAC-SHA256) sin I/O a base de datos ni llamadas externas. Excelente para un hot path que se invoca cada 60 segundos por usuario.
 
 **Login (`POST /login`):**
-Mediana de **290 ms** — el cuello de botella más visible. Es esperado: el login implica bcrypt password verification (operación costosa por diseño) + llamada HTTP al Identity Service para resolver el `anonymousId`. El P99 de 330 ms es consistente y sin outliers, lo que indica que el sistema es estable bajo esta carga.
+Mediana de **290 ms** en ejecución local con 20 usuarios — el cuello de botella más visible. Es esperado: el login implica bcrypt password verification (operación costosa por diseño) + llamada HTTP al Identity Service para resolver el `anonymousId`. El P99 de 330 ms es consistente y sin outliers bajo carga local.
+
+> **Comportamiento bajo carga alta (50 usuarios, AKS):** Sin optimización, la mediana sube a ~20 000 ms con 31% de timeouts. La causa principal es que `DualChainAuthenticationProvider` intenta LDAP primero (timeout por defecto ~30 s) antes de caer a local DB para usuarios del seed. La solución aplicada: timeout LDAP de 3 s (`com.sun.jndi.ldap.connect.timeout=3000`) + HikariCP pool size 20 en `application.yml`, lo que mantiene la latencia bajo carga en rangos aceptables.
 
 **Encuestas (`POST /surveys`):**
 Mediana de **6-7 ms** — throughput excelente para operaciones JPA + PostgreSQL. El P99 de 24 ms confirma que la base de datos local no es un cuello de botella con esta carga. En producción con más concurrencia se esperaría un degradación gradual.
