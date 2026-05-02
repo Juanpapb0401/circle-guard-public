@@ -9,12 +9,12 @@ import java.util.*;
 public class IdentityClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${identity.service.url:http://localhost:8083}/api/v1/identities/map")
-    private String identityUrl;
+    @Value("${identity.service.url}")
+    private String identityBaseUrl;
 
     public UUID getAnonymousId(String realIdentity) {
         Map<String, String> request = Map.of("realIdentity", realIdentity);
-        Map response = restTemplate.postForObject(identityUrl, request, Map.class);
+        Map response = restTemplate.postForObject(identityBaseUrl + "/api/v1/identities/map", request, Map.class);
         return UUID.fromString(response.get("anonymousId").toString());
     }
 }
